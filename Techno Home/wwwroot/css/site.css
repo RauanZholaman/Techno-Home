@@ -30,3 +30,13 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.navbar-collapse {
+  margin-left: auto;
+  margin-right: 200px;
+}
+
+.nav-item {
+  margin-left: 15px;
+  margin-right: 15px;
+}

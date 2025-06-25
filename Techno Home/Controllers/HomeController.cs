@@ -1,5 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
+using Microsoft.EntityFrameworkCore;
+using Techno_Home.Data;
 using Techno_Home.Models;
 
 namespace Techno_Home.Controllers;
@@ -7,10 +10,12 @@ namespace Techno_Home.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    private readonly Techno_HomeContext _context;
+    
+    public HomeController(ILogger<HomeController> logger, Techno_HomeContext context)
     {
         _logger = logger;
+        _context = context;
     }
 
     public IActionResult Index()
@@ -23,10 +28,11 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Catalog()
+    public async Task<IActionResult> Catalog()
     {
-        return View();
+        return View(await _context.Product.ToListAsync());
     }
+    
     
     public IActionResult About()
     {

@@ -3,6 +3,11 @@ html {
   font-size: 14px;
 }
 
+h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1{
+  color: black;
+}
+
+
 @media (min-width: 768px) {
   html {
     font-size: 16px;
@@ -86,3 +91,48 @@ body {
   justify-content: space-between;
 }
 
+.home-header {
+  padding: 70px;
+}
+
+.home-header h1 {
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.home-header h5 {
+  font-weight: 400;
+  color: #333;
+}
+
+/*.home-img {*/
+/*  height: 798px;*/
+/*  width: 1101px;*/
+/*  padding: 2rem 2rem;*/
+/*}*/
+
+.hero-section {
+  position: relative;
+  margin: 50px;
+  padding: 6rem 2rem;
+  overflow: hidden;
+  min-height: 500px;
+}
+
+.hero-text {
+  bottom: 200px;
+  /*max-width: 600px;*/
+  position: relative;
+  z-index: 2;
+}
+
+.hero-image {
+  /*position: absolute;*/
+
+  right: 60px;
+  bottom: 30px;
+  max-width: 60%;
+  height: auto;
+  z-index: 1;
+  opacity: 1;
+}

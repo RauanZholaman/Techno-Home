@@ -19,7 +19,12 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  margin-bottom: 150px;
+  font-family: 'KyivTypeTitling', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  background-color: #e8e8e8;
+  padding-top: 70px;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -40,3 +45,44 @@ body {
   margin-left: 15px;
   margin-right: 15px;
 }
+
+.product-image {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
+
+.card-img-container {
+  height: 200px;
+  margin-top: 10%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sticky-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+@font-face {
+  font-family: 'KyivTypeTitling';
+  src: url('/fonts/KyivTypeTitling-Bold3.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+.card {
+  /*max-height: 100%;*/
+  /*max-width: 90%;*/
+  /*margin: 0 auto;*/
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+

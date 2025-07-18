@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/Techno_Home.styles.css" asp-append-version="true"/>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 <header>
     <nav class="navbar navbar-expand-lg navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 sticky-navbar">
         <div class="container-fluid px-4">
@@ -37,24 +37,72 @@
                     </li>
                 </ul>
             </div>
-            @* <li class="nav-item navbar-collapse collapse d-sm-inline-flex justify-content-end"> Temporary commented out*@
-            @*     <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Manage Inventory</a> *@
-            @* </li> *@
         </div>
     </nav>
 </header>
 <div class="container-fluid px-4">
-    <main role="main" class="pb-3">
+    <main role="main" class="flex-fill">
         @RenderBody()
     </main>
 </div>
-
-<footer class="border-top footer text-muted">
-    <div class="container-fluid px-4">
-        &copy; 2025 - Techno Home - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Manage Inventory</a>
+<footer class="footer border-top mt-auto">
+    <section class="section-top flex-wrap align-items-center px-5 py-4">
+        <div class="me-5 d-flex">
+            <h1 class="display-2"> SIGN UP & GET 5% OFF. </h1>
+        </div>
+        <form class="d-flex align-items-center gap-2">
+            <div class="input-group">
+                <span class="input-group-text bg-white">
+                    <i class="bi bi-envelope"></i>
+                </span>
+                <input type="email" class="form-control" placeholder="Enter your email address"/>
+                <button class="btn btn-dark px-4">Subscribe</button>
+            </div>
+        </form>
+    </section>
+    <div class="px-5 py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2 mb-3">
+                    <h5 style="color: white">TechnoHome</h5>      
+                </div>
+                <div class="col-md-2 mb-3">
+                    <ul class="list-unstyled">
+                        <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Catalog">Catalog</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="FAQ">FAQ</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Contacts">Contacts</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <ul class="list-unstyled">
+                        <li><a class="nav-link" asp-area="" asp-controller="" asp-action="">Phone</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="" asp-action="">Laptop</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="" asp-action="">Mouse</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="" asp-action="">Computer</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="" asp-action="">Headphones</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <ul class="list-unstyled">
+                        <li><a class="nav-link" asp-area="" asp-controller="" asp-action="">TV</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="" asp-action="">Smart Watch</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="" asp-action="">Keyboards</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="" asp-action="">Games</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="" asp-action="">Consoles</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 offset-md-0">
+                    <ul class="list-unstyled">
+                        <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="Products" asp-action="Index">Manage Inventory</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-</footer>
+</footer>    
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>

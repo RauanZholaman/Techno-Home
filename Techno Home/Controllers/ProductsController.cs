@@ -5,17 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Techno_Home.Data;
+//using Techno_Home.Data;
 using Techno_Home.Models;
 
 namespace Techno_Home.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly Techno_HomeContext _context;
+        private readonly StoreDbContext _context;
         private readonly IWebHostEnvironment _env;
 
-        public ProductsController(Techno_HomeContext context, IWebHostEnvironment env)
+        public ProductsController(StoreDbContext context, IWebHostEnvironment env)
         {
             _context = context;
             _env = env;
@@ -24,7 +24,7 @@ namespace Techno_Home.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Product.ToListAsync());
+            return View(await _context.Products.ToListAsync());
         }
 
         // GET: Products/Details/5
@@ -35,19 +35,29 @@ namespace Techno_Home.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Product
+            var products = await _context.Products 
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            if (products == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            return View(products);
         }
 
         // GET: Products/Create
         public IActionResult Create()
         {
+            ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
+            try
+            {
+                ViewBag.Users = new SelectList(_context.Users, "UserName", "UserName");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading users: {ex.Message}");
+                ViewBag.Users = new List<SelectListItem>(); // Empty list to avoid crash
+            }
             return View();
         }
 
@@ -55,51 +65,82 @@ namespace Techno_Home.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Genre,Price")] Product product, IFormFile image)
+        public async Task<IActionResult> Create([Bind("Id,Name,BrandName,Description,CategoryId,SubCategoryId,Released,LastUpdatedBy,LastUpdated,ImagePath,Price")] Product Products, IFormFile image)
         {
-            ModelState.Remove(nameof(product.ImageFileName));
-            
-            if (image == null || image.Length == 0)
+            try
             {
-                ModelState.AddModelError(nameof(image), "Please choose an image");
-            }
-            
-            if (!ModelState.IsValid)
-                return View(product);
-            
-            // if (ModelState.IsValid) // The original condition
-            // {
-            //     _context.Add(product);
-            //     await _context.SaveChangesAsync();
-            //     return RedirectToAction(nameof(Index));
-            // }
-            // return View(product);
-            
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
-            
-            var uploadDir = Path.Combine(_env.WebRootPath, "images", "products");
-            Directory.CreateDirectory(uploadDir);
-            var savePath = Path.Combine(uploadDir, fileName);
+                // Fix the Id generation
+                Products.Id = _context.Products.Any() ? _context.Products.Max(p => p.Id) + 1 : 1;
+                
+                // Set the timestamp
+                Products.LastUpdated = DateTime.Now;
+                
+                ModelState.Remove(nameof(Products.ImagePath));
+                ModelState.Remove(nameof(Products.Category));
+                
+                if (image == null || image.Length == 0)
+                {
+                    ModelState.AddModelError(nameof(image), "Please choose an image");
+                }
+                
+                // Check if ModelState is valid and show errors on the page
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.ErrorMessage = "Form validation failed. Please check all fields.";
+                    
+                    // Add all validation errors to ViewBag for debugging
+                    var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                    ViewBag.ValidationErrors = string.Join(", ", errors);
+                    
+                    return View(Products);
+                }
+                
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
+                
+                var uploadDir = Path.Combine(_env.WebRootPath, "images", "products");
+                Directory.CreateDirectory(uploadDir);
+                var savePath = Path.Combine(uploadDir, fileName);
 
-            await using (var fs = new FileStream(savePath, FileMode.Create))
+                await using (var fs = new FileStream(savePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(fs);
+                }
+
+                Products.ImagePath = fileName;
+
+                _context.Add(Products);
+                
+                // Add this to see if SaveChanges actually gets called
+                ViewBag.DebugMessage = "About to save to database...";
+                
+                var result = await _context.SaveChangesAsync();
+                
+                // Check how many records were affected
+                ViewBag.DebugMessage = $"SaveChanges returned: {result} records affected.";
+                
+                if (result > 0)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = "No records were saved to the database.";
+                    return View(Products);
+                }
+            }
+            catch (Exception ex)
             {
-                await image.CopyToAsync(fs);
+                ViewBag.ErrorMessage = $"Error: {ex.Message}";
+                ViewBag.ExceptionDetails = ex.ToString();
+                return View(Products);
             }
-
-            product.ImageFileName = fileName;
-
-            _context.Add(product);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
         }
 
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id, IFormFile? image)
         {
-            
-            var product = await _context.Product.FindAsync(id);
-            if (product == null)
+            var Products = await _context.Products.FindAsync(id);
+            if (Products == null)
             {
                 return NotFound();
             }
@@ -109,23 +150,21 @@ namespace Techno_Home.Controllers
                 return NotFound();
             }
             
-            return View(product);
+            return View(Products);
         }
 
         // POST: Products/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseDate,Genre,Price")] Product product, IFormFile? image)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Released,CategoryId,Price")] Product Products, IFormFile? image)
         {
-            var existingProduct = await _context.Product.FindAsync(id);
+            var existingProduct = await _context.Products.FindAsync(id);
             if (existingProduct == null)
             {
                 return NotFound();
             }
 
-            ModelState.Remove(nameof(product.ImageFileName));
+            ModelState.Remove(nameof(Products.ImagePath));
             
             if (image != null && image.Length > 0)
             {
@@ -137,43 +176,23 @@ namespace Techno_Home.Controllers
                 await using var fs = new FileStream(savePath, FileMode.Create);
                 await image.CopyToAsync(fs);
             
-                existingProduct.ImageFileName = fileName;
+                existingProduct.ImagePath = fileName;
             }
             
-            /////////////////////////////////////////// Original Implementation 
-            
-            if (id != product.Id)
+            if (id != Products.Id)
             {
                 return NotFound();
             }
             
             if (!ModelState.IsValid)
             {
-                // try
-                // {
-                //     /* Save to DB */
-                //     _context.Update(product);
-                //     await _context.SaveChangesAsync();
-                // }
-                // catch (DbUpdateConcurrencyException)
-                // {
-                //     if (!ProductExists(product.Id))
-                //     {
-                //         return NotFound();
-                //     }
-                //     else
-                //     {
-                //         throw;
-                //     }
-                // }
-                // return RedirectToAction(nameof(Index));
-                return View(product);
-            }
+                return View(Products);
+            } 
             
-            existingProduct.Title       = product.Title;
-            existingProduct.ReleaseDate = product.ReleaseDate;
-            existingProduct.Genre       = product.Genre;
-            existingProduct.Price       = product.Price;
+            existingProduct.Name       = Products.Name;
+            existingProduct.Released   = Products.Released;
+            existingProduct.CategoryId = Products.CategoryId;
+            existingProduct.Price      = Products.Price;
             
             _context.Update(existingProduct);
             await _context.SaveChangesAsync();
@@ -190,14 +209,14 @@ namespace Techno_Home.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Product
+            var Products = await _context.Products
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
+            if (Products == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            return View(Products);
         }
 
         // POST: Products/Delete/5
@@ -205,10 +224,10 @@ namespace Techno_Home.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Product.FindAsync(id);
-            if (product != null)
+            var Products = await _context.Products.FindAsync(id);
+            if (Products != null)
             {
-                _context.Product.Remove(product);
+                _context.Products.Remove(Products);
             }
 
             await _context.SaveChangesAsync();
@@ -217,7 +236,8 @@ namespace Techno_Home.Controllers
 
         private bool ProductExists(int id)
         {
-            return _context.Product.Any(e => e.Id == id);
+            return _context.Products.Any(e => e.Id == id);
         }
+        
     }
 }

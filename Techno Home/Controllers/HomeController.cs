@@ -2,17 +2,18 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Microsoft.EntityFrameworkCore;
-using Techno_Home.Data;
+//using Techno_Home.Data;
 using Techno_Home.Models;
+using StoreDbContext = Techno_Home.Models.StoreDbContext;
 
 namespace Techno_Home.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly Techno_HomeContext _context;
+    private readonly StoreDbContext _context;
     
-    public HomeController(ILogger<HomeController> logger, Techno_HomeContext context)
+    public HomeController(ILogger<HomeController> logger, StoreDbContext context)
     {
         _logger = logger;
         _context = context;
@@ -30,7 +31,26 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Catalog()
     {
-        return View(await _context.Product.ToListAsync());
+        var products = await _context.Products
+            .Select(p => new Product
+            {
+                Id = p.Id,
+                Name = p.Name,
+                BrandName = p.BrandName,
+                Description = p.Description,
+                CategoryId = p.CategoryId,
+                SubCategoryId = p.SubCategoryId,
+                Released = p.Released,
+                LastUpdatedBy = p.LastUpdatedBy,
+                LastUpdated = p.LastUpdated,
+                ImagePath = p.ImagePath,
+                Price = p.Price
+                // Deliberately NOT including LastUpdatedByNavigation
+            })
+            .AsNoTracking()
+            .ToListAsync();
+    
+        return View(products);
     }
     
     

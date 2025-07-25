@@ -23,9 +23,27 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Catalog">Catalog</a>
-                    </li>
+                    <ui class="navbar-nav justify-content-center">
+                        <li class="nav-item dropdown ">
+                            <a class="nav-link" href="#" id="navbarNavDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="False" style="color: black">
+                                Category
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-white justify-content-between" aria-labelledby="navbarWhiteDropdownMenuLink">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Catalog">General Catalog</a></li>
+                                <li><a class="dropdown-item" href="#">TV</a></li>
+                                <li><a class="dropdown-item" href="#">Phone</a></li>
+                                <li><a class="dropdown-item" href="#">Laptop</a></li>
+                                <li><a class="dropdown-item" href="#">Mouse</a></li>
+                                <li><a class="dropdown-item" href="#">Computer</a></li>
+                                <li><a class="dropdown-item" href="#">Keyboards</a></li>
+                                <li><a class="dropdown-item" href="#">Games</a></li>
+                                <li><a class="dropdown-item" href="#">Consoles</a></li>
+                            </ul>
+                        </li>
+                    </ui>
+                    @* <li class="nav-item"> *@ 
+                    @*     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Catalog">Catalog</a> *@
+                    @* </li> *@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
                     </li>

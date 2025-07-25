@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<Techno_Home.Models.Product>
 @{
-    ViewData["Title"] = "Catalog";
+    ViewData["Name"] = "Catalog";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid" style="padding-top: 70px">
+<div class="container-fluid" style="padding-top: 70px; padding-bottom: 70px">
     <h2 class="text-center" >Catalog</h2>
     <div class="row justify-content-end" style="margin-bottom: 10px">
         <div class="col-2 row-3">
@@ -12,18 +12,30 @@
                 <input class="form-control me-2 rounded-0" type="search" placeholder="Search"/>
                 <button class="btn btn-outline-success rounded-0" type="submit">Search</button>
             </form>
-
         </div>
     </div>
-    <div class="row">
+    <div class="row"> <!-- THE ENTIRE GRID INCLUDES FILTER SIDEBAR AND CARDS -->
         <div class="col-lg-3">
             <div class="card h-100 rounded-0">
                 <div class="card-body" style="padding: 40px">
-                    <h5>Filter</h5>
+                    <div class="filter-section">
+                        <h5>Filter</h5>
+                        <div class="filter-title">Type:</div>
+                        <div class="filter-options">
+                            <span class="filter-tag active" data-type="phone">Phone</span>
+                            <span class="filter-tag" data-type="ipad">iPad</span>
+                            <span class="filter-tag" data-type="tv">TV</span>
+                            <span class="filter-tag" data-type="laptop">Laptop</span>
+                            <span class="filter-tag" data-type="processor">Processor</span>
+                            <span class="filter-tag" data-type="smartwatch">Smart Watch</span>
+                            <span class="filter-tag" data-type="computer">Computer</span>
+                            <span class="filter-tag" data-type="games">Games</span>
+                        </div>
+                        <a href="#" class="show-all-btn">Show All</a>    
+                    </div>
                 </div>
             </div>
         </div>
-
         <div class="col-lg-9">
             <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-3 gx-3 gy-3">
                 @foreach (var item in Model)
@@ -31,12 +43,12 @@
                     <div class="col">
                         <div class="card h-100 rounded-0">
                             <div class="card-img-container">
-                                <img class="card-img-top product-image" src="~/images/products/@item.ImageFileName" alt="@item.Title"/>
+                                <img class="card-img-top product-image" src="~/images/products/@item.ImagePath" alt="@item.Name"/>
                             </div>
                             <div class="card-body">
-                                <h4 class="card-title">@item.Title</h4>
+                                <h4 class="card-Name">@item.Name</h4>
                                 <div class="d-flex justify-content-between align-items-center img-fluid" style="margin-top: 14%">
-                                    <h4 class="card-title">S$@item.Price</h4>
+                                    <h4 class="card-Name">S$@item.Price</h4>
                                     <a href="#" class="btn btn-primary" style="background-color: black; border-color: black;">Add to Card</a>
                                 </div>
                             </div>

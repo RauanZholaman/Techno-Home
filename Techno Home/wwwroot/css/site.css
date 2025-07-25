@@ -24,7 +24,6 @@ html {
 }
 
 body {
-  margin-bottom: 150px;
   font-family: 'KyivTypeTitling', sans-serif;
   font-weight: 700;
   font-style: normal;
@@ -127,12 +126,23 @@ body {
 }
 
 .hero-image {
-  /*position: absolute;*/
-
+  /*position: absolute;*/ 
   right: 60px;
   bottom: 30px;
   max-width: 60%;
   height: auto;
   z-index: 1;
   opacity: 1;
+}
+
+.footer {
+  
+  background: black;
+  color: #ffffff;
+}
+
+.section-top {
+  display: flex;
+  justify-content: space-between;
+  background: red;
 }

@@ -2,8 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Techno_Home.Data;
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<Techno_HomeContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Techno_HomeContext") ?? throw new InvalidOperationException("Connection string 'Techno_HomeContext' not found.")));
+builder.Services.AddDbContext<StoreDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("StoreDbContext") ?? throw new InvalidOperationException("Connection string 'StoreDbContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

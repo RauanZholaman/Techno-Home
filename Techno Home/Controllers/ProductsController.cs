@@ -21,11 +21,59 @@ namespace Techno_Home.Controllers
             _env = env;
         }
 
-        // GET: Products
-        public async Task<IActionResult> Index()
+        //GET: Products
+        public async Task<IActionResult> Index(List<string> type, List<string> brand, decimal? minPrice, decimal? maxPrice)
         {
-            return View(await _context.Products.ToListAsync());
+            var types = _context.Categories.ToList();
+            
+            ViewBag.Types = types;
+        
+            var products = _context.Products
+                .Include(p => p.Category)
+                .ToList();
+            
+            var query = _context.Products.AsQueryable();
+            
+            if (type.Any())
+            {
+                query = query.Where(p => type.Contains(p.Category.CategoryId.ToString()));
+            }
+            if (minPrice.HasValue)
+            {
+                query = query.Where(p => p.Price >= minPrice.Value);
+            }
+            if (maxPrice.HasValue)
+            {
+                query = query.Where(p => p.Price <= maxPrice.Value);
+            }
+            
+            return View(await query.ToListAsync());
         }
+        
+        // public async Task<IActionResult> Index(List<string> selectedTypes, decimal? minPrice, decimal? maxPrice)
+        // {
+        //     var query = _context.Products.Include(p => p.Category).AsQueryable();
+        //
+        //     if (selectedTypes?.Any() == true)
+        //         query = query.Where(p => selectedTypes.Contains(p.Category.Name));
+        //
+        //     if (minPrice.HasValue)
+        //         query = query.Where(p => p.Price >= minPrice.Value);
+        //
+        //     if (maxPrice.HasValue)
+        //         query = query.Where(p => p.Price <= maxPrice.Value);
+        //
+        //     var viewModel = new ProductFilter
+        //     {
+        //         Categories = await _context.Categories.ToListAsync(),
+        //         Products = await query.ToListAsync(),
+        //         SelectedTypes = selectedTypes,
+        //         minPrice = minPrice,
+        //         maxPrice = maxPrice
+        //     };
+        //
+        //     return View(viewModel);
+        // }
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)

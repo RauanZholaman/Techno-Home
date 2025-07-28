@@ -29,28 +29,48 @@ public class HomeController : Controller
         return View();
     }
 
+    // public async Task<IActionResult> Catalog()
+    // {
+    //     var products = await _context.Products
+    //         .Select(p => new Product
+    //         {
+    //             Id = p.Id,
+    //             Name = p.Name,
+    //             BrandName = p.BrandName,
+    //             Description = p.Description,
+    //             CategoryId = p.CategoryId,
+    //             SubCategoryId = p.SubCategoryId,
+    //             Released = p.Released,
+    //             LastUpdatedBy = p.LastUpdatedBy,
+    //             LastUpdated = p.LastUpdated,
+    //             ImagePath = p.ImagePath,
+    //             Price = p.Price
+    //             // Deliberately NOT including LastUpdatedByNavigation
+    //         })
+    //         .AsNoTracking()
+    //         .ToListAsync();
+    //
+    //     return View(products);
+    // }
+    
     public async Task<IActionResult> Catalog()
     {
         var products = await _context.Products
-            .Select(p => new Product
-            {
-                Id = p.Id,
-                Name = p.Name,
-                BrandName = p.BrandName,
-                Description = p.Description,
-                CategoryId = p.CategoryId,
-                SubCategoryId = p.SubCategoryId,
-                Released = p.Released,
-                LastUpdatedBy = p.LastUpdatedBy,
-                LastUpdated = p.LastUpdated,
-                ImagePath = p.ImagePath,
-                Price = p.Price
-                // Deliberately NOT including LastUpdatedByNavigation
-            })
+            .Include(p => p.Category)
             .AsNoTracking()
             .ToListAsync();
-    
-        return View(products);
+
+        var categories = await _context.Categories.ToListAsync();
+
+        var viewModel = new ProductFilter
+        {
+            Products = products,
+            Categories = categories,
+            Alltypes = categories.Select(c => c.Name).ToList(),
+            AllBrands = products.Select(p => p.BrandName).Distinct().ToList()
+        };
+
+        return View(viewModel);
     }
     
     

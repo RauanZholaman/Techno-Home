@@ -222,7 +222,7 @@ body {
   display: grid;
   grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
   gap: 12px 15px; /* row gap, column gap */
-  padding: 14px 14px;
+  padding: 4px 4px;
 }
 
 .filter-card {

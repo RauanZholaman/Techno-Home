@@ -35,4 +35,5 @@ public partial class Product
     public virtual ICollection<Stocktake> Stocktakes { get; set; } = new List<Stocktake>();
 
     public virtual SubCategory? SubCategory { get; set; }
+    
 }

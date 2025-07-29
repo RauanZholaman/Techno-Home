@@ -28,38 +28,25 @@ public class HomeController : Controller
     {
         return View();
     }
-
-    // public async Task<IActionResult> Catalog()
-    // {
-    //     var products = await _context.Products
-    //         .Select(p => new Product
-    //         {
-    //             Id = p.Id,
-    //             Name = p.Name,
-    //             BrandName = p.BrandName,
-    //             Description = p.Description,
-    //             CategoryId = p.CategoryId,
-    //             SubCategoryId = p.SubCategoryId,
-    //             Released = p.Released,
-    //             LastUpdatedBy = p.LastUpdatedBy,
-    //             LastUpdated = p.LastUpdated,
-    //             ImagePath = p.ImagePath,
-    //             Price = p.Price
-    //             // Deliberately NOT including LastUpdatedByNavigation
-    //         })
-    //         .AsNoTracking()
-    //         .ToListAsync();
-    //
-    //     return View(products);
-    // }
     
-    public async Task<IActionResult> Catalog()
+    [HttpGet]
+    public async Task<IActionResult> Catalog(List<string> type, List<string> brand, decimal? minPrice, decimal? maxPrice)
     {
-        var products = await _context.Products
-            .Include(p => p.Category)
-            .AsNoTracking()
-            .ToListAsync();
+        var allProducts = _context.Products.Include(p => p.Category).AsQueryable();
 
+        if (type != null && type.Any())
+            allProducts = allProducts.Where(p => type.Contains(p.Category.Name));
+
+        if (brand != null && brand.Any())
+            allProducts = allProducts.Where(p => brand.Contains(p.BrandName));
+
+        if (minPrice.HasValue)
+            allProducts = allProducts.Where(p => p.Price >= minPrice.Value);
+
+        if (maxPrice.HasValue)
+            allProducts = allProducts.Where(p => p.Price <= maxPrice.Value);
+
+        var products = await allProducts.AsNoTracking().ToListAsync();
         var categories = await _context.Categories.ToListAsync();
 
         var viewModel = new ProductFilter
@@ -67,11 +54,12 @@ public class HomeController : Controller
             Products = products,
             Categories = categories,
             Alltypes = categories.Select(c => c.Name).ToList(),
-            AllBrands = products.Select(p => p.BrandName).Distinct().ToList()
+            AllBrands = await _context.Products.Select(p => p.BrandName).Distinct().ToListAsync()
         };
 
         return View(viewModel);
     }
+
     
     
     public IActionResult About()

@@ -47,4 +47,9 @@
       <_ContentIncludedByDefault Remove="wwwroot\fonts\kyiv-type-titling\KyivTypeTitling-VarGX.ttf" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+      <Folder Include="wwwroot\images\products\" />
+    </ItemGroup>
+
 </Project>

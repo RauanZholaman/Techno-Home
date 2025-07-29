@@ -80,10 +80,19 @@ body {
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'Inter-SemiBold';
+  src: url('/fonts/Inter-SemiBold.otf') format('opentype');
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter-ExtraLight';
+  src: url('/fonts/Inter-ExtraLight.otf') format('opentype');
+  font-style: normal;
+}
+
 .card {
-  /*max-height: 100%;*/
-  /*max-width: 90%;*/
-  /*margin: 0 auto;*/
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -103,12 +112,6 @@ body {
   font-weight: 400;
   color: #333;
 }
-
-/*.home-img {*/
-/*  height: 798px;*/
-/*  width: 1101px;*/
-/*  padding: 2rem 2rem;*/
-/*}*/
 
 .hero-section {
   position: relative;
@@ -146,3 +149,86 @@ body {
   justify-content: space-between;
   background: red;
 }
+
+.filter-section {
+  font-family: "Inter-ExtraLight";
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+
+.filter-section h1,
+.filter-section h2,
+.filter-section h3,
+.filter-section h4,
+.filter-section h5,
+.filter-section h6 {
+  font-family: "Inter-SemiBold";
+}
+
+.price-inputs-horizontal input {
+  width: calc(50% - 3px); /* 50% minus half the gap */
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.filter-buttons {
+  padding-bottom: 20px;
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items:  center;
+  margin: 10px;
+  gap: 20px;
+}
+
+.checkbox-item-underline {
+  position: relative;
+}
+
+.checkbox-item-underline input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-item-underline label {
+  display: inline-block;
+  padding: 5px 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 13px;
+  color: #666;
+  border-bottom: 2px solid transparent;
+  user-select: none;
+}
+
+.checkbox-item-underline label:hover {
+  color: #007bff;
+  border-bottom-color: #007bff;
+}
+
+.checkbox-item-underline input[type="checkbox"]:checked + label {
+  color: #007bff;
+  border-bottom-color: #007bff;
+  font-weight: 600;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+  gap: 12px 15px; /* row gap, column gap */
+  padding: 14px 14px;
+}
+
+.filter-card {
+  position: sticky;
+  top: 20px; 
+  height: auto !important;
+  align-self: flex-start; 
+}
+

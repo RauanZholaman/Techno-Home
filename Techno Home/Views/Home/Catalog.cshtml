@@ -69,7 +69,10 @@
                     <div class="col">
                         <div class="card h-100 rounded-0">
                             <div class="card-img-container">
-                                <img class="card-img-top product-image" src="~/images/products/@item.ImagePath" alt="@item.Name"/>
+                                @if (@item.ImageData != null)
+                                {
+                                    <img class="card-img-top product-image" src="data:image/jpeg;base64,@Convert.ToBase64String(@item.ImageData)" />
+                                }
                             </div>
                             <div class="card-body">
                                 <h4 class="card-Name">@item.Name</h4>

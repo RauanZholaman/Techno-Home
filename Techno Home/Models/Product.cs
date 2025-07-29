@@ -24,7 +24,7 @@ public partial class Product
 
     public DateTime? LastUpdated { get; set; }
 
-    public string? ImagePath { get; set; }
+    public byte[]? ImageData { get; set; }
 
     public decimal? Price { get; set; }
 

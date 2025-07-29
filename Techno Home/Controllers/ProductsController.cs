@@ -50,32 +50,6 @@ namespace Techno_Home.Controllers
             return View(await query.ToListAsync());
         }
         
-        // public async Task<IActionResult> Index(List<string> selectedTypes, decimal? minPrice, decimal? maxPrice)
-        // {
-        //     var query = _context.Products.Include(p => p.Category).AsQueryable();
-        //
-        //     if (selectedTypes?.Any() == true)
-        //         query = query.Where(p => selectedTypes.Contains(p.Category.Name));
-        //
-        //     if (minPrice.HasValue)
-        //         query = query.Where(p => p.Price >= minPrice.Value);
-        //
-        //     if (maxPrice.HasValue)
-        //         query = query.Where(p => p.Price <= maxPrice.Value);
-        //
-        //     var viewModel = new ProductFilter
-        //     {
-        //         Categories = await _context.Categories.ToListAsync(),
-        //         Products = await query.ToListAsync(),
-        //         SelectedTypes = selectedTypes,
-        //         minPrice = minPrice,
-        //         maxPrice = maxPrice
-        //     };
-        //
-        //     return View(viewModel);
-        // }
-
-        // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -113,7 +87,7 @@ namespace Techno_Home.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,BrandName,Description,CategoryId,SubCategoryId,Released,LastUpdatedBy,LastUpdated,ImagePath,Price")] Product Products, IFormFile image)
+        public async Task<IActionResult> Create([Bind("Id,Name,BrandName,Description,CategoryId,SubCategoryId,Released,LastUpdatedBy,LastUpdated,ImageData,Price")] Product Products, IFormFile image)
         {
             try
             {
@@ -123,7 +97,7 @@ namespace Techno_Home.Controllers
                 // Set the timestamp
                 Products.LastUpdated = DateTime.Now;
                 
-                ModelState.Remove(nameof(Products.ImagePath));
+                // ModelState.Remove(nameof(Products.ImagePath));
                 ModelState.Remove(nameof(Products.Category));
                 
                 if (image == null || image.Length == 0)
@@ -142,19 +116,12 @@ namespace Techno_Home.Controllers
                     
                     return View(Products);
                 }
-                
-                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
-                
-                var uploadDir = Path.Combine(_env.WebRootPath, "images", "products");
-                Directory.CreateDirectory(uploadDir);
-                var savePath = Path.Combine(uploadDir, fileName);
 
-                await using (var fs = new FileStream(savePath, FileMode.Create))
+                await using (var stream = new MemoryStream())
                 {
-                    await image.CopyToAsync(fs);
+                    await image.CopyToAsync(stream);
+                    Products.ImageData = stream.ToArray();
                 }
-
-                Products.ImagePath = fileName;
 
                 _context.Add(Products);
                 
@@ -185,69 +152,125 @@ namespace Techno_Home.Controllers
         }
 
         // GET: Products/Edit/5
-        public async Task<IActionResult> Edit(int? id, IFormFile? image)
+        // public async Task<IActionResult> Edit(int? id, IFormFile? image)
+        // {
+        //     var Products = await _context.Products.FindAsync(id);
+        //     if (Products == null)
+        //     {
+        //         return NotFound();
+        //     }
+        //     
+        //     if (id == null)
+        //     {
+        //         return NotFound();
+        //     }
+        //     
+        //     return View(Products);
+        // }
+        public async Task<IActionResult> Edit(int? id)
         {
-            var Products = await _context.Products.FindAsync(id);
-            if (Products == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
             
-            if (id == null)
+            var product = await _context.Products.FindAsync(id);
+            if (product == null) return NotFound();
+
+            var viewModel = new ProductEditViewModel
             {
-                return NotFound();
-            }
+                Id = product.Id,
+                Name = product.Name,
+                BrandName = product.BrandName,
+                Description = product.Description,
+                CategoryId = product.CategoryId,
+                SubCategoryId = product.SubCategoryId,
+                Released = product.Released,
+                Price = product.Price,
+            };
             
-            return View(Products);
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, ProductEditViewModel vm, IFormFile? ImageFile)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingProduct = await _context.Products.FindAsync(id);
+                if (existingProduct == null) return NotFound();
+
+                if (!ModelState.IsValid)
+                    return View(vm);
+
+                // Update fields
+                existingProduct.Name = vm.Name;
+                existingProduct.BrandName = vm.BrandName;
+                existingProduct.Description = vm.Description;
+                existingProduct.CategoryId = vm.CategoryId;
+                existingProduct.SubCategoryId = vm.SubCategoryId;
+                existingProduct.Released = vm.Released;
+                existingProduct.Price = vm.Price;
+
+                if (ImageFile != null && ImageFile.Length > 0)
+                {
+                    using var ms = new MemoryStream();
+                    await ImageFile.CopyToAsync(ms);
+                    existingProduct.ImageData = ms.ToArray();
+                }
+            
+                _context.Update(existingProduct);
+                await _context.SaveChangesAsync();   
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: Products/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Released,CategoryId,Price")] Product Products, IFormFile? image)
-        {
-            var existingProduct = await _context.Products.FindAsync(id);
-            if (existingProduct == null)
-            {
-                return NotFound();
-            }
-
-            ModelState.Remove(nameof(Products.ImagePath));
-            
-            if (image != null && image.Length > 0)
-            {
-                var fileName = Guid.NewGuid() + Path.GetExtension(image.FileName);
-                var uploadDir = Path.Combine(_env.WebRootPath!, "images", "products");
-                Directory.CreateDirectory(uploadDir);
-                var savePath = Path.Combine(uploadDir, fileName);
-            
-                await using var fs = new FileStream(savePath, FileMode.Create);
-                await image.CopyToAsync(fs);
-            
-                existingProduct.ImagePath = fileName;
-            }
-            
-            if (id != Products.Id)
-            {
-                return NotFound();
-            }
-            
-            if (!ModelState.IsValid)
-            {
-                return View(Products);
-            } 
-            
-            existingProduct.Name       = Products.Name;
-            existingProduct.Released   = Products.Released;
-            existingProduct.CategoryId = Products.CategoryId;
-            existingProduct.Price      = Products.Price;
-            
-            _context.Update(existingProduct);
-            await _context.SaveChangesAsync();
-            
-            
-            return RedirectToAction(nameof(Index));
-        }
+        // [HttpPost]
+        // [ValidateAntiForgeryToken]
+        // public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Released,CategoryId,Price")] Product Products, IFormFile? image)
+        // {
+        //     var existingProduct = await _context.Products.FindAsync(id);
+        //     if (existingProduct == null)
+        //     {
+        //         return NotFound();
+        //     }
+        //
+        //     ModelState.Remove(nameof(Products.ImagePath));
+        //     
+        //     if (image != null && image.Length > 0)
+        //     {
+        //         var fileName = Guid.NewGuid() + Path.GetExtension(image.FileName);
+        //         var uploadDir = Path.Combine(_env.WebRootPath!, "images", "products");
+        //         Directory.CreateDirectory(uploadDir);
+        //         var savePath = Path.Combine(uploadDir, fileName);
+        //     
+        //         await using var fs = new FileStream(savePath, FileMode.Create);
+        //         await image.CopyToAsync(fs);
+        //     
+        //         existingProduct.ImagePath = fileName;
+        //     }
+        //     
+        //     if (id != Products.Id)
+        //     {
+        //         return NotFound();
+        //     }
+        //     
+        //     if (!ModelState.IsValid)
+        //     {
+        //         return View(Products);
+        //     } 
+        //     
+        //     existingProduct.Name       = Products.Name;
+        //     existingProduct.Released   = Products.Released;
+        //     existingProduct.CategoryId = Products.CategoryId;
+        //     existingProduct.Price      = Products.Price;
+        //     
+        //     _context.Update(existingProduct);
+        //     await _context.SaveChangesAsync();
+        //     
+        //     
+        //     return RedirectToAction(nameof(Index));
+        // }
 
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)

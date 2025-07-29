@@ -24,7 +24,7 @@ public partial class StoreDbContext : DbContext
 
     public virtual DbSet<Patron> Patrons { get; set; }
 
-    public virtual DbSet<Product> Products { get; set; }
+    public virtual DbSet<Product> Products { get; set; } = null!;
 
     public virtual DbSet<ProductsInOrder> ProductsInOrders { get; set; }
 
@@ -102,9 +102,7 @@ public partial class StoreDbContext : DbContext
                 .HasColumnName("ID");
             entity.Property(e => e.BrandName).HasMaxLength(255);
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
-            entity.Property(e => e.ImagePath)
-                .HasMaxLength(255)
-                .IsUnicode(false);
+            entity.Property(e => e.ImageData).HasColumnType("varbinary(max)");
             entity.Property(e => e.LastUpdated).HasColumnType("datetime");
             entity.Property(e => e.LastUpdatedBy).HasMaxLength(50);
             entity.Property(e => e.Name).HasMaxLength(255);

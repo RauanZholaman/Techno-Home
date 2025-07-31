@@ -2,6 +2,7 @@
 @{
     ViewData["Name"] = "Catalog";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    
 }
 
 <div class="container-fluid" style="padding-top: 70px; padding-bottom: 70px">
@@ -27,6 +28,7 @@
                                     @foreach (var type in Model.Alltypes)
                                     {
                                         <div class="checkbox-item-underline">
+                                            @* <input type="checkbox" name="type" value="@type" id="type_@type"/> *@
                                             <input type="checkbox" name="type" value="@type" id="type_@type"/>
                                             <label for="type_@type">@type</label>
                                         </div>
@@ -78,7 +80,9 @@
                                 <h4 class="card-Name">@item.Name</h4>
                                 <div class="d-flex justify-content-between align-items-center img-fluid" style="margin-top: 14%">
                                     <h4 class="card-Name">S$@item.Price</h4>
-                                    <a href="#" class="btn btn-primary" style="background-color: black; border-color: black;">Add to Card</a>
+                                    <a class="btn btn-primary" style="background-color: black; border-color: black;" asp-controller="Cart" asp-action="Add" asp-route-id="@item.Id">
+                                        Add to Card
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -88,4 +92,3 @@
         </div>
     </div>
 </div>
-

@@ -6,11 +6,122 @@
 
 <html>
 <head>
-    <h2> Contacts </h2>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Technoholm</title>
+    <style>
+        .contact-section {
+            padding: 10rem 0;
+            position: relative;
+        }
+        
+        .contact-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+        }
+        
+        .main-heading {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #2c2c2c;
+            margin-bottom: 2rem;
+            line-height: 1.1;
+        }
+        
+        .description-text {
+            font-size: 1.1rem;
+            color: #2c2c2c;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+        
+        .contact-info {
+            text-align: right;
+        }
+        
+        .contact-label {
+            font-size: 1rem;
+            color: #2c2c2c;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-value {
+            font-size: 0.95rem;
+            color: #2c2c2c;
+            margin-bottom: 2rem;
+        }
+        
+        .contact-value:last-child {
+            margin-bottom: 0;
+        }
+        
+        media (max-width: 768px) {
+            .main-heading {
+                font-size: 2.8rem;
+            }
+            
+            .contact-info {
+                text-align: left;
+                margin-top: 3rem;
+            }
+        }
+        
+        media (max-width: 576px) {
+            .main-heading {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
 </head>
-<body>
-<div>
-      
-</div>
-</body>
+    <body>
+        <div class="container-fluid px-0">
+            <div class="contact-section">
+                <div class="container">
+                    <div class="row align-items-start">
+                        <div class="col-lg-7 col-md-8">
+                            <h1 class="main-heading">
+                                We're here to help<br>
+                                — get in touch with<br>
+                                Techno home!
+                            </h1>
+                            <p class="description-text">
+                                Whether you have a question about a product, need<br>
+                                help with an order, or just want to say hello — our team<br>
+                                is always ready to assist you.
+                            </p>
+                        </div>
+                        
+                        <div class="col-lg-5 col-md-4">
+                            <div class="contact-info">
+                                <div class="mb-4">
+                                    <div class="contact-label">Phone</div>
+                                    <div class="contact-value">+65 (XXXX) XX-XX</div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div class="contact-label">Available:</div>
+                                    <div class="contact-value">Mon-Sat, 10:00-19:00</div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div class="contact-label">Email:</div>
+                                    <div class="contact-value">support@technohome.kz</div>
+                                </div>
+                                
+                                <div>
+                                    <div class="contact-label">Store Address:</div>
+                                    <div class="contact-value">Singapore</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
 </html>

@@ -25,6 +25,8 @@ namespace Techno_Home.Controllers
         public async Task<IActionResult> Index(List<string> type, List<string> brand, decimal? minPrice, decimal? maxPrice)
         {
             var types = _context.Categories.ToList();
+            var isAdmin = HttpContext.Session.GetString("IsAdmin");
+            
             
             ViewBag.Types = types;
         
@@ -150,23 +152,7 @@ namespace Techno_Home.Controllers
                 return View(Products);
             }
         }
-
-        // GET: Products/Edit/5
-        // public async Task<IActionResult> Edit(int? id, IFormFile? image)
-        // {
-        //     var Products = await _context.Products.FindAsync(id);
-        //     if (Products == null)
-        //     {
-        //         return NotFound();
-        //     }
-        //     
-        //     if (id == null)
-        //     {
-        //         return NotFound();
-        //     }
-        //     
-        //     return View(Products);
-        // }
+        
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -223,54 +209,7 @@ namespace Techno_Home.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-        // POST: Products/Edit/5
-        // [HttpPost]
-        // [ValidateAntiForgeryToken]
-        // public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Released,CategoryId,Price")] Product Products, IFormFile? image)
-        // {
-        //     var existingProduct = await _context.Products.FindAsync(id);
-        //     if (existingProduct == null)
-        //     {
-        //         return NotFound();
-        //     }
-        //
-        //     ModelState.Remove(nameof(Products.ImagePath));
-        //     
-        //     if (image != null && image.Length > 0)
-        //     {
-        //         var fileName = Guid.NewGuid() + Path.GetExtension(image.FileName);
-        //         var uploadDir = Path.Combine(_env.WebRootPath!, "images", "products");
-        //         Directory.CreateDirectory(uploadDir);
-        //         var savePath = Path.Combine(uploadDir, fileName);
-        //     
-        //         await using var fs = new FileStream(savePath, FileMode.Create);
-        //         await image.CopyToAsync(fs);
-        //     
-        //         existingProduct.ImagePath = fileName;
-        //     }
-        //     
-        //     if (id != Products.Id)
-        //     {
-        //         return NotFound();
-        //     }
-        //     
-        //     if (!ModelState.IsValid)
-        //     {
-        //         return View(Products);
-        //     } 
-        //     
-        //     existingProduct.Name       = Products.Name;
-        //     existingProduct.Released   = Products.Released;
-        //     existingProduct.CategoryId = Products.CategoryId;
-        //     existingProduct.Price      = Products.Price;
-        //     
-        //     _context.Update(existingProduct);
-        //     await _context.SaveChangesAsync();
-        //     
-        //     
-        //     return RedirectToAction(nameof(Index));
-        // }
+        
 
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)

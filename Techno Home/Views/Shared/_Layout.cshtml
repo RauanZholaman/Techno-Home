@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@{
+    var isAdmin = Context.Session.GetString("isAdmin");
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -18,41 +22,37 @@
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-xl-center" style="color: black">
+            <div class="navbar-collapse collapse d-sm-inline-flex w-100 justify-content-xl-center align-items-center" style="color: black">
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
-                    <ui class="navbar-nav justify-content-center">
-                        <li class="nav-item dropdown ">
-                            <a class="nav-link" href="#" id="navbarNavDarkDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="False" style="color: black">
-                                Catalog
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-white justify-content-between" aria-labelledby="navbarWhiteDropdownMenuLink">
-                                <li><a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Catalog">General Catalog</a></li>
-                                <li><a class="dropdown-item" href="#">TV</a></li>
-                                <li><a class="dropdown-item" href="#">Phone</a></li>
-                                <li><a class="dropdown-item" href="#">Laptop</a></li>
-                                <li><a class="dropdown-item" href="#">Mouse</a></li>
-                                <li><a class="dropdown-item" href="#">Computer</a></li>
-                                <li><a class="dropdown-item" href="#">Keyboards</a></li>
-                                <li><a class="dropdown-item" href="#">Games</a></li>
-                                <li><a class="dropdown-item" href="#">Consoles</a></li>
-                            </ul>
-                        </li>
-                    </ui>
-                    @* <li class="nav-item"> *@ 
-                    @*     <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Catalog">Catalog</a> *@
-                    @* </li> *@
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="FAQ">FAQ</a>
+                    <li class="nav-item"> 
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Catalog">Catalog</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Contacts">Contacts</a>
                     </li>
+                    @if (isAdmin == "true")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Dashboard</a>
+                        </li>
+                    }
+                    <li class="nav-item">
+                        @if (Context.Session.GetString("UserName") != null)
+                        {
+                            @* <span class="d-flex" style="color: red">Hello, @Context.Session.GetString("UserName")!</span> *@
+                            <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Logout</a>
+                        }
+                        else
+                        {
+                            <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+                        }
+                    </li>
+                        <a asp-controller="Home" asp-action="Index">
+                            <img src="~/images/Shopping cart.png" alt="Cart" style="height: 35px; cursor: pointer; padding-top: 5px">
+                        </a>
                 </ul>
             </div>
         </div>
@@ -80,7 +80,7 @@
     </section>
     <div class="px-5 py-5">
         <div class="container">
-            <div class="row">
+            <div class="row d-flex justify-content-center">
                 <div class="col-md-2 mb-3">
                     <h5 style="color: white">TechnoHome</h5>      
                 </div>
@@ -88,7 +88,7 @@
                     <ul class="list-unstyled">
                         <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                         <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a></li>
-                        <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Catalog">Catalog</a></li>
+                        <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">About Us</a></li>
                         <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="FAQ">FAQ</a></li>
                         <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Contacts">Contacts</a></li>
                     </ul>
@@ -114,7 +114,12 @@
                 <div class="col-md-3 offset-md-0">
                     <ul class="list-unstyled">
                         <li><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
-                        <li><a class="nav-link" asp-area="" asp-controller="Products" asp-action="Index">Manage Inventory</a></li>
+                        @if (isAdmin == "true")
+                        {
+                            <li>
+                                <a class="nav-link" asp-area="" asp-controller="Products" asp-action="Index">Dashboard</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

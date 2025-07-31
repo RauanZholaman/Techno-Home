@@ -1,0 +1,52 @@
+﻿@model List<Techno_Home.Models.CartItem>
+
+@{
+    ViewData["Title"] = "My Bag";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="cart-container">
+    <h2 class="cart-title">My Shopping Cart</h2>
+    @foreach (var item in Model)
+    {
+        <div class="cart-item">
+            <img src="data:image/jpeg;base64,@Convert.ToBase64String(@item.Product.ImageData)" alt="@item.Product.Name" class="item-img" />
+            <div class="item-details">
+                <div class="item-name">@item.Product.Name</div>
+                <div class="item-controls">
+                    <form asp-action="UpdateQuantity" method="post" style="display: inline;">
+                        <input type="hidden" name="productId" value="@item.Product.Id"/>
+                        <input type="hidden" name="quantity" value="@(item.Quantity - 1)"/>
+                        <button type="submit" class="qty-btn" @(item.Quantity <= 1 ? "disabled" : "")>-</button>
+                    </form>
+                    
+                    <span>@item.Quantity</span>
+                    
+                    <form asp-action="UpdateQuantity" method="post" style="display: inline">
+                        <input type="hidden" name="productId" value="@item.Product.Id" />
+                        <input type="hidden" name="quantity" value="@(item.Quantity + 1)" />
+                        <button type="submit" class="qty-btn">+</button>
+                    </form>
+                </div>
+            </div>
+            <div class="item-price">@(item.Product.Price?.ToString("C"))</div>
+            <a href="@Url.Action("Remove", "Cart", new { id = item.Product.Id })" class="remove-btn">×</a>
+        </div>
+    }
+
+    <div class="summary-box">
+        <h4>Order Summary</h4>
+        
+        <div class="summary-total">
+            <span>Total</span>
+            <span>@Model.Sum(i => i.Product.Price * i.Quantity)?.ToString("C")</span>
+        </div>
+
+        <form asp-controller="#" asp-action="#" method="post">
+            <button type="submit" class="buy-btn">Proceed to Payment</button>
+        </form>
+        <form asp-controller="Cart" asp-action="Clear" method="post">
+            <button type="submit" class="buy-btn">Cancel</button>
+        </form>
+    </div>
+</div>

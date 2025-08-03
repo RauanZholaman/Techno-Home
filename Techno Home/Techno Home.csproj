@@ -48,8 +48,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Migrations\" />
-      <Folder Include="wwwroot\images\products\" />
+      <Folder Include="ViewModels\" />
     </ItemGroup>
 
 </Project>

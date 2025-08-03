@@ -33,15 +33,8 @@ public class AccountController : Controller
         HttpContext.Session.SetInt32("UserId", user.UserId);
         HttpContext.Session.SetString("UserName", user.UserName);
         HttpContext.Session.SetString("isAdmin", user.IsAdmin ? "true" : "false");
-
-        // if (user.IsAdmin)
-        // {
-        //     return RedirectToAction("Index", "P");
-        // }
-        // else
-        // {
-        return RedirectToAction("Index", "Home");
         
+        return RedirectToAction("Index", "Home");
     }
     
     //GET: /Account/Register

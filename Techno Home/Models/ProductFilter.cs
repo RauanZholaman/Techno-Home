@@ -6,7 +6,6 @@ public class ProductFilter
 {
     public List<Product> Products { get; set; }
     public List<Category> Categories { get; set; }
-    //public List<Product> Products { get; set; }
     
     public List<string>? SelectedTypes { get; set; } // For Category
     public decimal? minPrice { get; set; }

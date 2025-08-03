@@ -127,13 +127,7 @@ namespace Techno_Home.Controllers
 
                 _context.Add(Products);
                 
-                // Add this to see if SaveChanges actually gets called
-                ViewBag.DebugMessage = "About to save to database...";
-                
                 var result = await _context.SaveChangesAsync();
-                
-                // Check how many records were affected
-                ViewBag.DebugMessage = $"SaveChanges returned: {result} records affected.";
                 
                 if (result > 0)
                 {

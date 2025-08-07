@@ -107,7 +107,6 @@ namespace Techno_Home.Controllers
                     Products.LastUpdatedBy = userId.Value;
                 }
                 
-                // ModelState.Remove(nameof(Products.ImagePath));
                 ModelState.Remove(nameof(Products.Category));
                 
                 if (image == null || image.Length == 0)
@@ -169,7 +168,6 @@ namespace Techno_Home.Controllers
                 BrandName = product.BrandName,
                 Description = product.Description,
                 CategoryId = product.CategoryId,
-                SubCategoryId = product.SubCategoryId,
                 Released = product.Released,
                 Price = product.Price,
             };
@@ -194,7 +192,6 @@ namespace Techno_Home.Controllers
                 existingProduct.BrandName = vm.BrandName;
                 existingProduct.Description = vm.Description;
                 existingProduct.CategoryId = vm.CategoryId;
-                existingProduct.SubCategoryId = vm.SubCategoryId;
                 existingProduct.Released = vm.Released;
                 existingProduct.Price = vm.Price;
 

@@ -15,8 +15,6 @@ public partial class Product
 
     public int CategoryId { get; set; }
 
-    public int? SubCategoryId { get; set; }
-
     public DateOnly? Released { get; set; }
 
     public DateTime? LastUpdated { get; set; }
@@ -32,8 +30,4 @@ public partial class Product
     public virtual Category Category { get; set; } = null!;
 
     public virtual User? LastUpdatedByNavigation { get; set; }
-
-    public virtual ICollection<Stocktake> Stocktakes { get; set; } = new List<Stocktake>();
-
-    public virtual SubCategory? SubCategory { get; set; }
 }

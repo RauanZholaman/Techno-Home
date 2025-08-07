@@ -21,25 +21,6 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult Login() => View();
     
-    // //POST: /Account/Login
-    // [HttpPost]
-    // public IActionResult Login(string username, string password)
-    // {
-    //     var user = _context.Users.SingleOrDefault(u => u.UserName == username);
-    //     if (user == null || !VerifyPassword(password, user.Salt, user.HashedPw))
-    //     {
-    //         ViewBag.Error = "Username or password is incorrect";
-    //         return View();
-    //     }
-    //     
-    //     HttpContext.Session.SetInt32("UserId", user.UserId);
-    //     HttpContext.Session.SetString("UserName", user.UserName);
-    //     HttpContext.Session.SetString("isAdmin", user.IsAdmin ? "true" : "false");
-    //     
-    //     return RedirectToAction("Index", "Home");
-    // }
-    
-    // TEST
     [HttpPost]
     public IActionResult Login(string email, string password)
     {
@@ -58,8 +39,6 @@ public class AccountController : Controller
 
         return RedirectToAction("Index", "Home");
     }
-
-    // TEST
     
     //GET: /Account/Register
     [HttpGet]
@@ -69,20 +48,11 @@ public class AccountController : Controller
     [HttpPost]
     public IActionResult Register(User user, string password)
     {
-        // if (_context.Users.Any(u => u.UserName == user.UserName))
-        // {
-        //     ViewBag.Error = "Username is already taken";
-        //     return View();
-        // }
-        
-        // TEST
         if (_context.Users.Any(u => u.Email == user.Email))
         {
             ViewBag.Error = "Email is already registered";
             return View();
         }
-
-        // TEST
         
         CreatePasswordHash(password, out var hash, out var salt);
         user.HashedPw = hash;
@@ -137,12 +107,9 @@ public class AccountController : Controller
         {
             return View(model);
         }
-
-        // var user = _context.Users.FirstOrDefault(u => u.UserName == model.UserName);
-
-        // TEST
+        
         var user = _context.Users.FirstOrDefault(u => u.Email == model.Email);
-        // TEST
+     
         if (user == null)
         {
             ModelState.AddModelError("", "User not found.");

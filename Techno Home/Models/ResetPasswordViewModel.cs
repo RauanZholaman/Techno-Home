@@ -4,8 +4,10 @@ namespace Techno_Home.Models;
 
 public class ResetPasswordViewModel
 {
+    // public string UserName { get; set; }
+    
     [Required]
-    public string UserName { get; set; }
+    public string Email { get; set; }
     
     [Required]
     [DataType(DataType.Password)]

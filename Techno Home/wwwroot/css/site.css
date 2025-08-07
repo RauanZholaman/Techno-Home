@@ -65,6 +65,15 @@ body {
   align-items: center;
 }
 
+.card-img-container-details {
+  height: 600px;
+  margin-top: 10%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .sticky-navbar {
   position: fixed;
   top: 0;

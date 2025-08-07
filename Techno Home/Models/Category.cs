@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Techno_Home.Data;
 
 namespace Techno_Home.Models;
 

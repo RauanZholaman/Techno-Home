@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Techno_Home.Models;
 using Microsoft.EntityFrameworkCore;
+using Techno_Home.Models;
 
 namespace Techno_Home.Data;
-
 
 public partial class StoreDbContext : DbContext
 {
@@ -15,7 +14,6 @@ public partial class StoreDbContext : DbContext
     public StoreDbContext(DbContextOptions<StoreDbContext> options)
         : base(options)
     {
-        ChangeTracker.LazyLoadingEnabled = false;
     }
 
     public virtual DbSet<Category> Categories { get; set; }
@@ -24,7 +22,7 @@ public partial class StoreDbContext : DbContext
 
     public virtual DbSet<Patron> Patrons { get; set; }
 
-    public virtual DbSet<Product> Products { get; set; } = null!;
+    public virtual DbSet<Product> Products { get; set; }
 
     public virtual DbSet<ProductsInOrder> ProductsInOrders { get; set; }
 
@@ -38,12 +36,9 @@ public partial class StoreDbContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    public virtual DbSet<CartItem> ShoppingCartItems { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https: //go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer(
-            "Server=Warmachine;Database=StoreDB;Encrypt=False;Trusted_Connection=True;MultipleActiveResultSets=true");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=Warmachine;Database=StoreDB;Encrypt=False;Trusted_Connection=True;MultipleActiveResultSets=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -105,9 +100,10 @@ public partial class StoreDbContext : DbContext
                 .HasColumnName("ID");
             entity.Property(e => e.BrandName).HasMaxLength(255);
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
-            entity.Property(e => e.ImageData).HasColumnType("varbinary(max)");
+            entity.Property(e => e.ImagePath)
+                .HasMaxLength(255)
+                .IsUnicode(false);
             entity.Property(e => e.LastUpdated).HasColumnType("datetime");
-            entity.Property(e => e.LastUpdatedBy).HasMaxLength(50);
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.SubCategoryId).HasColumnName("SubCategoryID");
@@ -117,12 +113,7 @@ public partial class StoreDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Product__Categor__4316F928");
 
-            // entity.HasOne(d => d.LastUpdatedByNavigation)
-            //     .WithMany()
-            //     .HasForeignKey(d => d.LastUpdatedBy)
-            //     .HasPrincipalKey(p => p.UserName)
-            //     .HasConstraintName("FK__Product__LastUpd__44FF419A")
-            //     .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(d => d.LastUpdatedByNavigation).WithMany(p => p.Products).HasForeignKey(d => d.LastUpdatedBy);
 
             entity.HasOne(d => d.SubCategory).WithMany(p => p.Products)
                 .HasForeignKey(d => d.SubCategoryId)
@@ -227,31 +218,17 @@ public partial class StoreDbContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserName).HasName("PK__User__C9F284573D9ADC85");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C3AA39A38");
 
-            entity.ToTable("User");
+            entity.HasIndex(e => e.Email, "UQ__Users__A9D105345770D551").IsUnique();
 
-            entity.Property(e => e.UserName).HasMaxLength(50);
-            entity.Property(e => e.Email).HasMaxLength(255);
-            entity.Property(e => e.HashedPw)
-                .HasMaxLength(64)
-                .IsUnicode(false)
-                .HasColumnName("HashedPW");
-            entity.Property(e => e.IsAdmin).HasColumnName("isAdmin");
-            entity.Property(e => e.Name).HasMaxLength(255);
-            entity.Property(e => e.Salt)
-                .HasMaxLength(32)
-                .IsUnicode(false);
-            entity.Property(e => e.UserId).HasColumnName("UserID");
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.UserName).HasMaxLength(100);
         });
 
-        base.OnModelCreating(modelBuilder);
-    
-        modelBuilder.Entity<CartItem>().HasNoKey();
-        
         OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
 }

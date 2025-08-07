@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Techno_Home.Data;
 using Techno_Home.Models;
+using StoreDbContext = Techno_Home.Data.StoreDbContext;
 
 namespace Techno_Home.Controllers
 {
@@ -26,31 +26,32 @@ namespace Techno_Home.Controllers
         {
             var types = _context.Categories.ToList();
             var isAdmin = HttpContext.Session.GetString("IsAdmin");
-            
-            
+    
             ViewBag.Types = types;
-        
-            var products = _context.Products
+
+            var query = _context.Products
                 .Include(p => p.Category)
-                .ToList();
-            
-            var query = _context.Products.AsQueryable();
-            
-            if (type.Any())
+                .AsQueryable();
+
+            if (type != null && type.Any())
             {
-                query = query.Where(p => type.Contains(p.Category.CategoryId.ToString()));
+                // Only filter if Category is not null
+                query = query.Where(p => p.Category != null && type.Contains(p.Category.CategoryId.ToString()));
             }
+
             if (minPrice.HasValue)
             {
-                query = query.Where(p => p.Price >= minPrice.Value);
+                query = query.Where(p => p.Price != null && p.Price >= minPrice.Value);
             }
+
             if (maxPrice.HasValue)
             {
-                query = query.Where(p => p.Price <= maxPrice.Value);
+                query = query.Where(p => p.Price != null && p.Price <= maxPrice.Value);
             }
-            
+
             return View(await query.ToListAsync());
         }
+
         
         public async Task<IActionResult> Details(int? id)
         {
@@ -75,7 +76,7 @@ namespace Techno_Home.Controllers
             ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
             try
             {
-                ViewBag.Users = new SelectList(_context.Users, "UserName", "UserName");
+                ViewBag.Users = new SelectList(_context.Users, "Name", "Name");
             }
             catch (Exception ex)
             {
@@ -89,8 +90,9 @@ namespace Techno_Home.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,BrandName,Description,CategoryId,SubCategoryId,Released,LastUpdatedBy,LastUpdated,ImageData,Price")] Product Products, IFormFile image)
+        public async Task<IActionResult> Create([Bind("Id,Name,BrandName,Description,CategoryId,SubCategoryId,Released,LastUpdated,ImageData,Price")] Product Products, IFormFile image)
         {
+            
             try
             {
                 // Fix the Id generation
@@ -98,6 +100,12 @@ namespace Techno_Home.Controllers
                 
                 // Set the timestamp
                 Products.LastUpdated = DateTime.Now;
+                
+                var userId = HttpContext.Session.GetInt32("UserId");
+                if (userId.HasValue)
+                {
+                    Products.LastUpdatedBy = userId.Value;
+                }
                 
                 // ModelState.Remove(nameof(Products.ImagePath));
                 ModelState.Remove(nameof(Products.Category));
@@ -153,7 +161,7 @@ namespace Techno_Home.Controllers
             
             var product = await _context.Products.FindAsync(id);
             if (product == null) return NotFound();
-
+            
             var viewModel = new ProductEditViewModel
             {
                 Id = product.Id,
@@ -190,6 +198,14 @@ namespace Techno_Home.Controllers
                 existingProduct.Released = vm.Released;
                 existingProduct.Price = vm.Price;
 
+                existingProduct.LastUpdated = DateTime.Now;
+                
+                var userId = HttpContext.Session.GetInt32("UserId");
+                if (userId.HasValue)
+                {
+                    existingProduct.LastUpdatedBy = userId.Value;
+                }
+                
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
                     using var ms = new MemoryStream();

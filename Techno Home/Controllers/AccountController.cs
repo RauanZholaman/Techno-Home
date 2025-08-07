@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Techno_Home.Data;
 using Techno_Home.Models;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Techno_Home.Helpers;
+using Techno_Home.Data;
 
 namespace Techno_Home.Controllers;
 
@@ -17,25 +18,48 @@ public class AccountController : Controller
     }
     
     // GET: /Account/Login
+    [HttpGet]
     public IActionResult Login() => View();
     
-    //POST: /Account/Login
+    // //POST: /Account/Login
+    // [HttpPost]
+    // public IActionResult Login(string username, string password)
+    // {
+    //     var user = _context.Users.SingleOrDefault(u => u.UserName == username);
+    //     if (user == null || !VerifyPassword(password, user.Salt, user.HashedPw))
+    //     {
+    //         ViewBag.Error = "Username or password is incorrect";
+    //         return View();
+    //     }
+    //     
+    //     HttpContext.Session.SetInt32("UserId", user.UserId);
+    //     HttpContext.Session.SetString("UserName", user.UserName);
+    //     HttpContext.Session.SetString("isAdmin", user.IsAdmin ? "true" : "false");
+    //     
+    //     return RedirectToAction("Index", "Home");
+    // }
+    
+    // TEST
     [HttpPost]
-    public IActionResult Login(string username, string password)
+    public IActionResult Login(string email, string password)
     {
-        var user = _context.Users.SingleOrDefault(u => u.UserName == username);
+        
+        var user = _context.Users.SingleOrDefault(u => u.Email == email);
         if (user == null || !VerifyPassword(password, user.Salt, user.HashedPw))
         {
-            ViewBag.Error = "Username or password is incorrect";
+            ViewBag.Error = "Email or password is incorrect";
             return View();
         }
-        
+
         HttpContext.Session.SetInt32("UserId", user.UserId);
         HttpContext.Session.SetString("UserName", user.UserName);
+        HttpContext.Session.SetString("Email", user.Email);
         HttpContext.Session.SetString("isAdmin", user.IsAdmin ? "true" : "false");
-        
+
         return RedirectToAction("Index", "Home");
     }
+
+    // TEST
     
     //GET: /Account/Register
     [HttpGet]
@@ -45,11 +69,20 @@ public class AccountController : Controller
     [HttpPost]
     public IActionResult Register(User user, string password)
     {
-        if (_context.Users.Any(u => u.UserName == user.UserName))
+        // if (_context.Users.Any(u => u.UserName == user.UserName))
+        // {
+        //     ViewBag.Error = "Username is already taken";
+        //     return View();
+        // }
+        
+        // TEST
+        if (_context.Users.Any(u => u.Email == user.Email))
         {
-            ViewBag.Error = "Username is already taken";
+            ViewBag.Error = "Email is already registered";
             return View();
         }
+
+        // TEST
         
         CreatePasswordHash(password, out var hash, out var salt);
         user.HashedPw = hash;
@@ -61,6 +94,7 @@ public class AccountController : Controller
         
         return RedirectToAction("Login");
     }
+    
     
     //GET: /Account/Logout
     public IActionResult Logout()
@@ -104,8 +138,11 @@ public class AccountController : Controller
             return View(model);
         }
 
-        var user = _context.Users.FirstOrDefault(u => u.UserName == model.UserName);
+        // var user = _context.Users.FirstOrDefault(u => u.UserName == model.UserName);
 
+        // TEST
+        var user = _context.Users.FirstOrDefault(u => u.Email == model.Email);
+        // TEST
         if (user == null)
         {
             ModelState.AddModelError("", "User not found.");

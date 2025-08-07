@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+
 namespace Techno_Home.Models;
 
 public partial class Stocktake
 {
-    [Key]
     public int ItemId { get; set; }
 
     public int? SourceId { get; set; }

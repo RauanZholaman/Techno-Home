@@ -1,7 +1,7 @@
 ﻿using Techno_Home.Models;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Techno_Home.Data;
+using StoreDbContext = Techno_Home.Data.StoreDbContext;
 
 namespace Techno_Home.Services
 {

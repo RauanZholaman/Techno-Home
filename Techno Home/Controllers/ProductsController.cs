@@ -21,24 +21,28 @@ namespace Techno_Home.Controllers
             _env = env;
         }
 
+        // Displays product list with optional filters
         //GET: Products
         public async Task<IActionResult> Index(List<string> type, List<string> brand, decimal? minPrice, decimal? maxPrice)
         {
-            var types = _context.Categories.ToList();
-            var isAdmin = HttpContext.Session.GetString("IsAdmin");
+            var types = _context.Categories.ToList();   
+            var isAdmin = HttpContext.Session.GetString("IsAdmin"); 
     
             ViewBag.Types = types;
 
+            // Base query including Category navigation property for filtering/display
             var query = _context.Products
                 .Include(p => p.Category)
                 .AsQueryable();
 
+            // Filter by CategoryId (as string) if provided and Category exists
             if (type != null && type.Any())
             {
                 // Only filter if Category is not null
                 query = query.Where(p => p.Category != null && type.Contains(p.Category.CategoryId.ToString()));
             }
 
+            // Apply min/max price range filters if provided
             if (minPrice.HasValue)
             {
                 query = query.Where(p => p.Price != null && p.Price >= minPrice.Value);
@@ -52,7 +56,7 @@ namespace Techno_Home.Controllers
             return View(await query.ToListAsync());
         }
 
-        
+        // Show product details by ID        
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -70,9 +74,11 @@ namespace Techno_Home.Controllers
             return View(products);
         }
 
+        // Displays product creation form with dynamic dropdowns
         // GET: Products/Create
         public IActionResult Create()
         {
+            // Populate category dropdown
             ViewBag.Categories = new SelectList(_context.Categories, "CategoryId", "Name");
             try
             {
@@ -86,19 +92,19 @@ namespace Techno_Home.Controllers
             return View();
         }
 
+        // Handles product creation
         // POST: Products/Create
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,BrandName,Description,CategoryId,SubCategoryId,Released,LastUpdated,ImageData,Price")] Product Products, IFormFile image)
+        public async Task<IActionResult> Create([Bind("Id,Name,BrandName,Description,CategoryId,Released,LastUpdated,ImageData,Price")] Product Products, IFormFile image)
         {
             
             try
             {
-                // Fix the Id generation
+                // Generate custom sequential ID (not relying on auto-increment)
                 Products.Id = _context.Products.Any() ? _context.Products.Max(p => p.Id) + 1 : 1;
                 
-                // Set the timestamp
+                // Timestamp and user tracking
                 Products.LastUpdated = DateTime.Now;
                 
                 var userId = HttpContext.Session.GetInt32("UserId");
@@ -107,8 +113,11 @@ namespace Techno_Home.Controllers
                     Products.LastUpdatedBy = userId.Value;
                 }
                 
+                // Avoid validation of navigation property
                 ModelState.Remove(nameof(Products.Category));
                 
+                
+                // Check if image file is attached
                 if (image == null || image.Length == 0)
                 {
                     ModelState.AddModelError(nameof(image), "Please choose an image");
@@ -125,13 +134,16 @@ namespace Techno_Home.Controllers
                     
                     return View(Products);
                 }
-
+                
+                
+                // Convert uploaded image to byte array
                 await using (var stream = new MemoryStream())
                 {
                     await image.CopyToAsync(stream);
                     Products.ImageData = stream.ToArray();
                 }
-
+                
+                // Save product to database
                 _context.Add(Products);
                 
                 var result = await _context.SaveChangesAsync();
@@ -154,6 +166,7 @@ namespace Techno_Home.Controllers
             }
         }
         
+        // Loads edit form with existing product data
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -161,6 +174,7 @@ namespace Techno_Home.Controllers
             var product = await _context.Products.FindAsync(id);
             if (product == null) return NotFound();
             
+            // Map to view model (decouples DB model from form)
             var viewModel = new ProductEditViewModel
             {
                 Id = product.Id,
@@ -175,6 +189,7 @@ namespace Techno_Home.Controllers
             return View(viewModel);
         }
 
+        // Handles saving changes after product edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ProductEditViewModel vm, IFormFile? ImageFile)
@@ -186,23 +201,25 @@ namespace Techno_Home.Controllers
 
                 if (!ModelState.IsValid)
                     return View(vm);
-
-                // Update fields
+                
+                // Update all relevant fields
                 existingProduct.Name = vm.Name;
                 existingProduct.BrandName = vm.BrandName;
                 existingProduct.Description = vm.Description;
                 existingProduct.CategoryId = vm.CategoryId;
                 existingProduct.Released = vm.Released;
                 existingProduct.Price = vm.Price;
-
                 existingProduct.LastUpdated = DateTime.Now;
                 
+                // Track who updated the product
                 var userId = HttpContext.Session.GetInt32("UserId");
                 if (userId.HasValue)
                 {
                     existingProduct.LastUpdatedBy = userId.Value;
                 }
                 
+                
+                // If a new image is provided, update image data
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
                     using var ms = new MemoryStream();
@@ -217,7 +234,7 @@ namespace Techno_Home.Controllers
             return RedirectToAction(nameof(Index));
         }
         
-
+        // Show confirmation page before deleting product
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -236,6 +253,7 @@ namespace Techno_Home.Controllers
             return View(Products);
         }
 
+        // Deletes product from database
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -250,7 +268,7 @@ namespace Techno_Home.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
+        
         private bool ProductExists(int id)
         {
             return _context.Products.Any(e => e.Id == id);

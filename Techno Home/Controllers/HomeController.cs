@@ -28,26 +28,33 @@ public class HomeController : Controller
         return View();
     }
     
+    // Displays product catalog with filtering options
     [HttpGet]
     public async Task<IActionResult> Catalog(List<string> type, List<string> brand, decimal? minPrice, decimal? maxPrice)
     {
         var allProducts = _context.Products.Include(p => p.Category).AsQueryable();
 
+        // Filter by selected types (category names)
         if (type != null && type.Any())
             allProducts = allProducts.Where(p => type.Contains(p.Category.Name));
-
+        
+        // Filter by selected brands
         if (brand != null && brand.Any())
             allProducts = allProducts.Where(p => brand.Contains(p.BrandName));
-
+        
+        // Filter by minimum price
         if (minPrice.HasValue)
             allProducts = allProducts.Where(p => p.Price >= minPrice.Value);
-
+        
+        // Filter by maximum price
         if (maxPrice.HasValue)
             allProducts = allProducts.Where(p => p.Price <= maxPrice.Value);
-
+        
         var products = await allProducts.AsNoTracking().ToListAsync();
         var categories = await _context.Categories.ToListAsync();
 
+        
+        // Prepare ViewModel for the Catalog view
         var viewModel = new ProductFilter
         {
             Products = products,
@@ -76,6 +83,7 @@ public class HomeController : Controller
         return View();
     }
 
+    // Error page with request ID for debugging
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
